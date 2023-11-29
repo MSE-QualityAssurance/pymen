@@ -1,6 +1,8 @@
 import random
-# set a seed for random based on time
-random.seed()
+import time
+
+# Set a seed for random based on time
+random.seed(time.process_time())
 
 # Basic card definitions
 class Card:
@@ -54,17 +56,17 @@ duchy = VictoryCard("Duchy", 5, 3)
 province = VictoryCard("Province", 8, 6)
 
 # Randomly choose number of players (2 to 4)
-num_players = random.randint(2, 4) 
+num_players = random.randint(2, 4)
 players = [Player() for _ in range(num_players)]
 
-# Sample game setup
+# Randomly assign initial decks
 for player in players:
-    player.deck = [copper] * 7 + [estate] * 3
+    player.deck = random.sample([copper] * 7 + [silver] * 3 + [gold] * 2 + [estate] * 2 + [duchy] * 1, 10)
     random.shuffle(player.deck)
     for _ in range(5):
         player.draw_card()
 
-# Game loop - very basic
+# Game loop - very basic with a buying phase
 for turn in range(1, 10):  # Example: 10 turns
     for player_num, player in enumerate(players, start=1):
         print(f"Player {player_num}'s turn: {turn}")
@@ -74,7 +76,13 @@ for turn in range(1, 10):  # Example: 10 turns
         if random.choice([True, False]):
             player.draw_card()
             print(f"Player {player_num} drew an extra card: {player.hand[-1]}")
-        
+
+        # Simulate a basic buying phase
+        if random.choice([True, False]):
+            purchased_card = random.choice([estate, duchy, province])
+            player.discard_pile.append(purchased_card)
+            print(f"Player {player_num} bought a {purchased_card}")
+
         # Cleanup and prepare for next turn
         player.discard_pile.extend(player.hand)
         player.hand = []
@@ -87,5 +95,3 @@ for player_num, score in enumerate(scores, start=1):
     print(f"Player {player_num} Score: {score}")
 winner = scores.index(max(scores)) + 1
 print(f"Player {winner} wins!")
-
-# Add more complex game logic as needed
